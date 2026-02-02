@@ -64,21 +64,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
 @st.cache_resource
 def carregar_modelo():
     """Carrega o modelo treinado"""
-    model_path = Path('../models/obesity_prediction_model.pkl')
+    model_path = Path('models/obesity_prediction_model.pkl') 
     
     if not model_path.exists():
-        st.error("""
+        st.error(f"""
         ❌ **Modelo não encontrado!**
         
-        Por favor, execute o pipeline de treinamento primeiro:
-        ```bash
-        cd notebooks
-        python obesity_pipeline.py
-        ```
+        O sistema procurou em: `{model_path.absolute()}`
+        
+        Certifique-se de que o arquivo .pkl foi enviado para o GitHub
+        e não está listado no .gitignore.
         """)
         st.stop()
     
@@ -89,8 +87,16 @@ def carregar_modelo():
 def carregar_dados_dashboard():
     """Carrega dataset para visualizações"""
     try:
-        df = pd.read_csv("../data/Obesity.csv")
+        # Pega a pasta onde ESTE arquivo (app.py) está (pasta src)
+        pasta_atual = Path(__file__).parent
+        
+        # Volta uma pasta para chegar na raiz e entra em 'data'
+        # src -> raiz -> data -> arquivo
+        caminho_csv = pasta_atual.parent / 'data' / 'Obesity.csv'
+        
+        df = pd.read_csv(caminho_csv)
         return df
+
     except Exception as e:
         st.error(f"❌ Erro ao carregar dataset: {e}")
         return None
